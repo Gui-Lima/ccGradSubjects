@@ -105,3 +105,9 @@ a) Robô jogador de futebol. b) Agente de compras na Internet. c) Robô explorad
 Para cada um dos agentes a seguir, caracterize o ambiente de acordo com as propriedades dadas na Seção 2.3 e selecione um projeto de agente adequado.
 a) Robô jogador de futebol. b) Agente de compras na Internet. c) Robô explorador de Marte. d) Assistente de matemático para demonstração de teoremas
 
+***
+Suponha que a medida de desempenho preocupa-se apenas com os T primeiros passos de tempo do ambiente e ignora tudo a partir de então. Mostre que a ação de um agente racional depende não apenas do estado do ambiente mas também do passo de tempo que ele alcançou.
+
+R: Isso deriva da definição de um agente racional. Um Agente racional busca ações para maximizar seu desempenho. Se o desempenho depende de T passos, o agente racional deve tomar suas ações usando isso como medida de alguma forma. Se t for o número de passos que o agente tomou e t>T, o agente não é mais racional, visto que não há mais uma medida de sua performance
+
+***
