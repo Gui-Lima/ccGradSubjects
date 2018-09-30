@@ -30,7 +30,13 @@ CheatSheet estudo de SI by Guila - 1EE
 * Busca parcialmente observável
 * Busca  CSP
 ### Livro
-
+* Agentes de resolução de problemas
+* Definição de problema
+* Formulando um problema - Vários exemplos
+* Busca
+* Algoritmos de busca sem informação
+* Algoritmos de busca informada
+* Funções heurísticas
 
 # Exercícios
 
