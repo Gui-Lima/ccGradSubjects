@@ -58,7 +58,50 @@ From Pessoa
 ;
 ```
 
+* Considere que todo professor é um líder em potencial. Realize
+uma consulta que relacione, em duas colunas, os nomes dos
+professores e o nome dos seus líderes. Mesmo os professores
+que não têm líder deverão aparecer na primeira coluna e
+mesmo os professores que não têm liderados devem aparecer
+na lista de líderes (segunda coluna).
+
+```
+SELECT Pessoa.nome P1, Pesoa.nome P2
+FROM Professor pr1
+    FULL OUTER JOIN Professor pr2
+    ON pr1.matricula_lider = pr2.matricula_professor
+    LEFT OUTER JOIN pessoa p1
+    ON p1.matricula_pessoa = pr1.matricula_professor
+    LEFT OUTER JOIN pessoa p2
+    ON p2.matricula_pessoa = pr2.matricula_professor
+;
+```
 ### Questões PL
+
+* Implemente um procedimento que recebe como parâmetro de
+entrada um título de um projeto e imprime os seus dados.
+
+```
+CREATE OR REPLACE PROCEDURE imprimeDados(tituloEn IN Projeto.titulo%TYPE) IS
+codigo   =  Projeto.codigo_projeto%TYPE;
+titulo   =  Projeto.titulo%TYPE;
+conceito =  Projeto.conceito%TYPE;
+hp       =  Projeto.hp%TYPE;
+BEGIN
+    SELECT * 
+    INTO codigo, titulo, conceito, hp
+    FROM Projeto
+    WHERE titulo = tituloEN;
+
+    dbms_output.put_line( 'COD: ' || v_codigo_projeto ||
+                        ' - TIT: ' || v_titulo ||
+                        ' - CON: ' || v_conceito ||
+                        ' - HP: ' || v_hp);
+END;
+/
+```
+
+* 
 
 * Crie um trigger que verifica a atualização de uma nota de
 prova e não permite que ela seja negativa

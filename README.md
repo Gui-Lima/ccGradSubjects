@@ -25,3 +25,5 @@ Uma pequena ordem de coisas que pretendo fazer no futuro mais próximo
 * Algoritmos: Eu tenho um repositório feito apenas para algoritmos, tenho que ajeitar ele um pouco e linkar ele a partir daqui.
 
 ## TODO
+Caso você queira fazer algo que não seja resumos/guias
+* Passar os guias para Markdown talvez fique mais fácil de ler, mas é sempre bom e seguro ter os arquivos brutos em odt também.
