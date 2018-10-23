@@ -10,7 +10,7 @@ Isso é um guia para cadeiras do Centro de Informática da Universidade Federal 
 
 [2/6] Quarto Periodo
 
-[2/5] Quinto Período
+[3/5] Quinto Período
 
 ## Contribuir
 Qualquer um formando ou formado no Cin sinta-se a vontade para contribuir, peço apenas que deixe tudo o mais organizado possível e siga as formatações como estão nas pastas. Não tem nenhum critério rigoroso, só deixe organizado. Eu prezo muito por
