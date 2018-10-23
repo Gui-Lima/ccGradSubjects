@@ -101,8 +101,6 @@ END;
 /
 ```
 
-* 
-
 * Crie um trigger que verifica a atualização de uma nota de
 prova e não permite que ela seja negativa
 

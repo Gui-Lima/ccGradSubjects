@@ -24,6 +24,10 @@ Uma pequena ordem de coisas que pretendo fazer no futuro mais próximo
 * Cadeiras que eu tenho resumo pronto mas tenho que passar pro PC: InfraSW, IP, Física;
 * Algoritmos: Eu tenho um repositório feito apenas para algoritmos, tenho que ajeitar ele um pouco e linkar ele a partir daqui.
 
+## Projetos parecidos também úteis
+* PetLib - https://www.facebook.com/CInUFPEOficial/posts/o-pet-inform%C3%A1tica-acaba-de-lan%C3%A7ar-o-petlib-uma-pasta-no-drive-destinada-ao-compa/1684144688329682/
+* pote - abre.ai/pote
+
 ## TODO
 Caso você queira fazer algo que não seja resumos/guias
 * Passar os guias para Markdown talvez fique mais fácil de ler, mas é sempre bom e seguro ter os arquivos brutos em odt também.
