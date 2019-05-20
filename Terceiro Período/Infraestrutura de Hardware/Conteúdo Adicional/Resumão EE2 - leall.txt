@@ -1,0 +1,503 @@
+=-=-=-=-=-=-= Pipeline =-=-=-=-=-=-=-=
+
+- Observando que na arquitetura multicilo alguns elementos de hardware ficavam ociosos durante certos estágios, tenta-se tornar esses elementos "ocupados" durante todo o processo de execução da instrução (utilização máxima do hardware). Desenvolve-se então a idéia de pipeline, dessa forma tentamos aumentar a eficiência através de um aumento da vazão (throughput). As instruções são executadas "Paralelamente" ( não se confundir com a execução paralela de processadores superescalares ).
+
+Latência - tempo que leva para completar uma tarefa.
+Throughtput - Número de instruções executadas por unidade de tempo. (Vazão)
+
+A latência afeta o throughput e vice-versa.
+- Aumento de latência faz com que uma instrução seja executada em mais tempo, reduzindo assim o throughput. 
+- pipeline não diminui a latência.
+- Latência de instruções é a mesma ou maior
+
+
+
+<analogia>
+
+lavagem de roupa:
+serial - lava-se , seca-se , passa-se e guarda-se. para então começar o próximo cesto de roupa.
+pipeline - enquanto o primeiro cesto é secado o segundo ja entra na lavadora e assim sucessivamente com todos os elementos.
+
+suponha que levamos 0,5h para cada estágio da lavagem ( 0,5h lavar , 0,5h secar ...) teremos então 2h para lavar 1 cesto de roupa. Suponha também que tenhamos 4 cestos para lavar.
+logo na lavagem serial gastaríamos 8h e na pipeline gastaríamos 3,5h.
+
+vamos observar o throughtput:
+
+throughtput serial -> 4cestos/8h -> 0,5cesto/h
+throughtput pipeline -> 4cestos/3,5h
+
+quantas vezes mais rápido (eficiente) é o pipeline nesse caso?
+
+X*0,5 = 4/3,5
+X = 8/3,5
+X = 2,8571...
+
+logo o pipeline é aproximadamente 2,3 vezes mais eficiente que o serial.
+
+<\analogia>
+
+<pipeline e eficiência>
+->se quisermos aumentar o throughtput podemos pensar em diminuir a duração dos estágios do pipeline e aumentar o número de estágios do pipeline.
+->caso aumentemos o número de estágios do pipeline estaremos aumentando também o numero de instruções que são executadas paralelamente.
+<\pipeline e eficiência>
+
+-o throughtput é limitado pelo estágio mais lento do pipeline. Devemos colocar uma duração na qual o estágio mais lento possa ser executado (Leitura da memória 200ps).
+
+<importante>
+
+->note que o entervalo de tempo entre o início de uma instrução e o início de outra (tempo entre instruções) sem pipeline é igual a duração da primeira instrução.
+imaginando o caso monocíclo esse caso será constante e igual ao tempo da instrução lw (mais lenta).
+
+INSTRUÇÃO A
+          | INSTRUÇÃO B
+          |           | INSTRUÇÃO C
+          |           |           | INSTRUÇÃO D
+__________|___________|___________|
+t
+(tempo 
+entre
+instruções)
+
+(a instrução B só começa t ps após o iníco da instrução A )
+
+-> no pipeline esse tempo entre instruções é reduzido ao tempo de um estágio do pipeline (se os estágios tiverem tempo constante).
+
+INSTRUÇÃO A
+ |INSTRUÇÃO B
+ | |INSTRUÇÃO C
+ | | |INSTRUÇÃO D
+_|_|_|
+t
+(tempo 
+entre
+instruções)
+
+(a instrução B só começa t ps após o iníco da instrução A )
+
+
+suponha que instruções sem pipeline tenham uma duração fixa de Tm ps , suponha também que o tempo de um estágio das mesmas instruções com pipeline tenha Tp ps (tempo de estágio fixo), sabemos que o tempo por instrução é Tm ps, sabemos também que o tempo total de uma instrução com pipeline é N (número de estágios do pipeline) * Tp. 
+supondo que a isntrução leve o mesmo tempo tanto com pipeline quanto sem pipeline (latência fixa) temos que :
+
+N*Tp = Tm
+
+logo: Tp = Tm/N
+
+
+fórmula:
+
+Tempo entre instruções com pipeline = Tempo entre instruções sem pipeline / Numero de estágios do pipeline 
+
+
+
+- a fórmula propõe que a razão entre os tempos entre instruções é próxima ao numero de estágios do pipeline, ou seja um processador com pipeline de 5 estados executa 5 vezes mais instruções por intervalo de tempo que um sem pipeline, porém fizemos uma suposição bastante forçada pois supusemos duração fixa para ambas as instruções. Porém na prática isso não acontece (estágios do pipeline podem levar 200ps para executar uma tarefa que leva 100ps, por exemplo escrever e ler no banco de registradores, tornando a instrução sem pipeline 800 ps e a com pipeline 1000 ps). Na prática a vazão de um processador é próxima a relação entre os tempos entre instruções.
+
+- se o pipeline não for balanceado pode perder desempenho!
+
+<\importante>
+
+
+<Estagios pipeline>
+
+IF (InstructionFetch) - Busca instrução
+ID(Instruction Decode) - Decodifica instrução e lê registradores
+EX(EXecute operation) - Calcula dados ou endereços
+MEM(Access MEMory operand) - Acessa operando na memória
+WB(Write result Back to register) - Escreve resultado no registrador
+
+<\Estagios pipeline>
+
+- necessidade de registradores para guardar dados intermediários dos estágios do pipeline.
+- dados como PC + 4 (caso de Beq), endereço de registrador de escrita, sinais de controle etc. são passados para registradores, esses registradores permitem que a informação não seja perdida.
+
+
+<representação>
+Diagramas para representação do pipeline.
+
+Diagrama de múltiplos ciclos de clock - mostra a operação do pipeline ao longo do tempo. (olhar no slide)
+Diagrama de único ciclo de clock - Mostra o processador e as instruções que estão executando nesse momento e em qual estágio elas estão. (como se fosse uma foto) (olhar no slide)
+
+<\reptesentação>
+
+<Controle>
+
+- Parecido com o do monociclo.
+- Porém no pipeline os sinais de controle devem ser repassados aos próximos estágios através de registradores.
+-Sinais de controle são repassados aos registradores do pipeline:
+–Durante o estágio de decodificação, sinais de controle para o resto dos estágios podem ser gerados e armazenados
+–A cada ciclo do clock, o registrador corrente passa os sinais para o registrador do próximo estágio
+
+<\Controle>
+
+<ISA e Pipeline>
+(ctrl + c / ctrl + v do slide xD)
+o Projeto do mips teve sua ISA projetada para pipeline.
+-Todas as instruções são de 32 bits
+-Mais fácil de buscar e decodificar em um ciclo
+-Contra-exemplo Intel x86: tem instruções variando de 1 a 17 bytes
+–Poucas instruções e instruções regulares
+-Permite decodificãção de leitura de registradores em um estágio
+–Endereçamento do Load/store - Permite cálculo de endereço no terceiro estágio e acesso no quarto estágio
+-Projeto de ISA afeta a complexidade de implementação do pipeline
+
+<\ISA e Pipeline>
+
+-Pipeline Aumenta custo de Hardware -> precisa-se duplicar a memória (dados + instrução) e acrescentar grande número de registradores.
+-Embora o custo de hardware seja aumentado o hardware pode ser utilizado mais eficientemente evitando elementos ociosos.
+
+Caso Ideal para o Pipeline -> Instruções independentes, Estágios de duração fixa e execução sequencial das instruçoes (sem desvios).
+
+Mas nem tudo é um mar de rosas....
+- Algumas instruções dependem diretamente de outras. (redução do desempenho)
+- Calculos de desvios.
+
+<Conflitos>
+
+Situações que não permitem o início de uma nova instrução no próximo ciclo.
+
+Conflitos Estruturais -  o recurso necessário para o início dessa execução está ocupado.
+Conflitos de Dados - dependência de dados entre instruções.
+Conflitos de Controle - a próxima instrução é determinada pela instrução anterior (que ainda não foi totalmente executada).(desvios)
+ 
+
+
+<\Conflitos>
+
+<Conflitos Estruturais>
+
+Conflitos Estruturais
+Conflito pelo uso de um recurso
+Hardware não permite que determinadas combinações de instruções sejam executadas em um pipeline
+Utilização de uma só memória para dados e instruções é um exemplo
+–Load/store requer acessoa dados
+–Estágio de busca de instrução teria que esperar o load/store terminar o acessoa memória para começar
+
+Solução comum: Replicar recursos
+
+<\Conflitos Estruturais>
+
+
+<Conflitode Dados>
+
+Uma instrução para ser executada depende de um dado gerado por uma instrução anterior
+EX:
+add$s0, $t0, $t1
+sub$t2, $s0, $t3
+
+a cpu precisa atrasar 2 ciclos para poder começar a executar a sub.
+
+
+ResolvendoConflitos de Dados:
+
+->Soluções em software (compilador/montador)
+–Inserção de NOPs - Compilador/Montador deve identificar conflitos de dados e evitá-los inserindo NOPs no código
+–Re-arrumação de código - Compilador/Montador deve identificar conflitos de dados e evitá-los re-arrumandoo código,Executa instruções que não tem dependência de dados e que a ordem de execução não altera a corretudedo programa
+
+-Análisede Soluções em SW para Conflitos de Dados
+ =Requerem compilador/montador “inteligente” que detecte conflitos de dados
+–Modifica o código para evitar conflitos
+–Mantem funcionamento correto do programa
+–Implementação do Compilador/Montador requer bom conhecimento do pipeline
+ =Inserção de NOPs
+–Insere retardos no programa
+–Degrada desempenho do sistema
+ =Re-arrumação de código
+–Não compromete desempenho
+–Mais complexidade na implementação do compilador/montador
+
+
+
+->Soluções em hardware
+–Método de Curto-circuito (Forwarding ou Bypassing) - Usa o resultado desejado assim que é computado,Não espera ser armazenado no registrador - Requer conexões extras na unidade de processamento.
+
+Como Implementar Forwarding?
+-Idéia é acrescentar HW com uma lógica capaz de detectar conflitos de dados e controlar unidade de processamento para realizar o forwarding
+-Deve-se acrescentar mais conexões para permitir que resultados possam ser utilizados antes de escritos no banco de registradores
+-Possivelmente, acrescenta-se multiplexadores para que outros estágios possam selecionar a fonte do operando, Banco de registradores ou resultado gerado por outra instrução anterior no pipeline(Acescenta-se a unidade de forwarding, multiplexadores e conexões)
+
+55Como Detectar Necessidade de Forward?
+->Passar números de registradores ao longo do pipeline
+–Exemplo:. ID/EX.RegisterRs = número do registrador Rs armazenado no registradorID/EX do pipeline
+->Números dos registradores que são operandos da ALU no estágio EX são dados por
+–ID/EX.RegisterRs, ID/EX.RegisterRt
+->Conflitos ocorrem quando
+1a.EX/MEM.RegisterRd = ID/EX.RegisterRs
+1b.EX/MEM.RegisterRd = ID/EX.RegisterRt
+2a.MEM/WB.RegisterRd = ID/EX.RegisterRs
+2b.MEM/WB.RegisterRd = ID/EX.RegisterRt
+->Mas só vai dar um forward se a instrução for escreverem um registrador
+–EX/MEM.RegWrite, MEM/WB.RegWrite
+->E somente se o Rd para a instrução não for $zero
+–EX/MEM.RegisterRd diferente de 0,MEM/WB.RegisterRd diferente de 0
+
+->Forwarding do resultado do estágio EX
+–if (EX/MEM.RegWrite and (EX/MEM.RegisterRd diferente de 0)and (EX/MEM.RegisterRd = ID/EX.RegisterRs)) : ForwardA = 10
+–if (EX/MEM.RegWrite and (EX/MEM.RegisterRd diferente de 0)and (EX/MEM.RegisterRd = ID/EX.RegisterRt)) : ForwardB = 10
+->Forwarding do resultado do estágio MEM
+–if (MEM/WB.RegWrite and (MEM/WB.RegisterRd diferente de 0)and (MEM/WB.RegisterRd = ID/EX.RegisterRs)) : ForwardA = 01
+–if (MEM/WB.RegWrite and (MEM/WB.RegisterRd diferente de 0)and (MEM/WB.RegisterRd = ID/EX.RegisterRt)) : ForwardB = 01
+
+Conflito Duplo de Dados
+-Considerea sequência:
+add $1,$1,$2
+add $1,$1,$3
+add $1,$1,$4
+->O terceiro add deve pegar o resultado do segundo add, não do primeiro
+–Primeiro add está no estágio MEM
+–Segundo add está no estágio EX
+->Deve-se reescrever condição de forward do estágio MEM
+–Somente se condição de forward de EX for falsa
+
+–Inserção de retardos (stalls) - Retarda a execução da próxima instrução em um ciclo
+
+Conflito de Dados Pelo Uso do Load
+->Nem sempre se pode utilizar forwarding
+–Se o valor ainda não tiver sido computado quando necessário
+
+- Quando não podemos utilizar forwarding para resolver conflitos, inserimos retardos.
+
+Como Detectar Este Tipo de Conflito de Dados?
+->Verificar se instrução depende do load no estágio ID
+->Números dos registradores do operandos da ALU são dados por:
+–IF/ID.RegisterRs, IF/ID.RegisterRt
+->Conflito acontece quando
+–ID/EX.MemRead and((ID/EX.RegisterRt = IF/ID.RegisterRs) or(ID/EX.RegisterRt = IF/ID.RegisterRt))
+->Se detectado, insira um retardo
+
+
+Como Inserir Retardos em um Pipeline?
+->Forçar sinais de controle no registrador ID/EX paraterem valor 0
+–EX, MEM and WB
+–Instrução que depende do load se torna um nop
+->Não permitir a atualização do PC e do registrador IF/ID
+–Instrução é decodificada de novo
+–Instrução seguinte é buscada novamente
+–Retardo de 1 ciclo permite que MEM leia dado do load
+->Depois se pode utilizar um forward do estágio EX
+
+
+Análise de Soluções em HW para Conflitos de Dados
+
+->Curto-circuito (Forwarding)
+–Não degrada desempenho
+–Requer custo um pouco maior de hardware
+
+->Inserção de Retardos
+–Similar a solução de SW de inserção de NOPs
+–Degrada desempenho do sistema
+
+->Pode-se utilizar os dois métodos em conjunto
+–Deve-se usar inserção de retardos, somente quando não é possível utilizar forwarding
+
+
+<\Conflitode Dados>
+
+
+<Conflitos de Controle>
+
+Causados por alteração de fluxo de controle
+–Desvios, chamadas e retorno de subrotinas
+–Busca de nova instrução depende do resultado da instrução anterior
+–Pipeline nem sempre pode buscar a instrução correta
+-Pois instrução que altera fluxo de controle ainda está no estágio de ID
+-Como resolver conflito minimizando perda de desempenho?
+
+Resolvendo Conflitos de Controle
+->Soluções em software (compilador/montador)
+–Re-arrumação de código
+->Desvio com efeito retardado - Consiste em re-arrumar o código de modo que enquanto a avaliação do desvio está sendo executada, uma nova instrução possa ser executada. Idealmente, instrução executada é independente do desvio.
+
+
+
+->Soluções em hardware
+–Congelamento do pipeline - Inserção de retardos até que se saiba se o desvio ocorrerá, Só depois é que se faz a busca de nova instrução.
+
+–Execução especulativa 
+-Congelamento em pipelines mais longos provocam uma perda de desempenho inaceitável,Um método para tratar conflitos de controle é especular qual será o resultado da instrução de desvio(Execuçãoespeculativa).
+–Só congela se a previsão for errada (anula a instrução inicializada)
+Previsão pode ser:
+–Estática
+Sempre não haverá desvio, ou sempre haverá desvio
+–Dinâmica
+De acordocom comportamentodo código
+
+Hardware mede comportamento dos desvios
+–Registra a história recente de todos os desvios em uma tabela (Branch Target Buffer (BTB))
+–Assume que o comportamento futuro dos desvios continuará o mesmo
+–Quando errado, anula instruções executadas erroneamente (coloca os valores de controle para zero), busca as instruções corretas e atualiza a história do comportamento do desvio
+
+
+–Aceleração de avaliação de desvio
+Uma forma de acelerar a avaliação do desvio é colocar hardware que calcula resultado do desvio no estágio ID.
+–Somador para endereço destino
+–Comparador de registradores
+
+Análise de Soluções para Conflitos de Controle
+
+Desvio com efeito retardado (SW)
+–Requer compilador/montador inteligente para identificar instruções independentes
+–Requer análise estática para prever comportamento de desvios
+
+Congelamento do pipeline (HW)
+–Simples
+–Degrada desempenho
+
+Execução especulativa(Hw)
+–Pode reduzir penalidades de desempenho decorridos de conflitos
+
+–Estática
+Simplicidade de implementação
+Não se baseia no comportamento do código, tendo resultados que variam de aplicação para aplicação
+
+–Dinâmica
+Baseia-se no comportamento do código maior probabilidade de acerto
+Complexidade de implementação e maior custo de HW
+
+Aceleração de avaliação de desvios(Hw)
+–Ajuda a diminuir penalidades de desempenho
+–Custo maior de HW, devido a replicação de componentesAnálisede
+
+<\Conflitos de Controle>
+
+Como Melhorar Desempenho de Pipeline?
+
+-> Aumentando o número de estágios
+SUPERPIPELINE
+– Estágios de menor duração
+– Frequência do clock maior
+- Quebra estágios em subestágios (estágios menores). Cada subestágio faz menos trabalho que estágio original, Pipeline com maior profundidade.
+Estágios menores demandam menos tempo para serem executados (Período menor <=> Frequência maior).
+Maior throughput <=> Melhor desempenho
+– Maior números de estágios, frequência maior de clock
+– Mais instruções podem ser processadas simultaneamente
+- Aumentar profundidade do pipeline nem sempre vai melhorar desempenho -  a partir de um certo ponto o overhead de leitura e escrita de processadores intermediários do pipeline começa a interferir no desempenho do processamento.
+
+Superpipeline visa diminuir tempo de execução de um
+programa
+– Dependências degradam desempenho
+ Número de estágios excessivos penalizam desempenho
+– Conflito de dados
+ pipeline maior = mais dependências = mais retardos
+– Conflito de controle
+ pipeline maior = mais estágios para preencher
+– Tempo dos registradores do pipeline (entre estágios) Limita tempo mínimo por estágio.
+ Maior custo de hardware
+
+-> Aumentando a quantidade de instruções que executam
+em paralelo
+– Paralelismo real
+– Replicação de recursos de HW
+– Superescalar e VLIW
+
+ PARALELISMO REAL
+Processador com n pipelines de instrução replicados
+– n dá o grau do pipeline superescalar
+Instruções diferentes podem iniciar a execução ao mesmo tempo
+ Requer replicação de recursos de HW
+ Aplicável a arquiteturas RISC e CISC
+– RISC : melhor uso efetivo
+– CISC : implementação mais difícil (utiliza-se o superescalar para executar as microinstruções)
+
+Grupos de instruções podem ser executados ao mesmo tempo
+– Número n de instruções por grupo define o grau do pipeline
+superescalar
+MIPS superescalar de grau 2
+- duplicação da ULA
+- registradores capazes de realizar 4 leituras e 2 escritas.
+- memória de instrução lê 64 bits. Instruções executadas aos pares (Primeiros 32 bits, instrução aritmética/branch, e os outros 32 bits, instrução load/store).
+
+Compiladores possuem técnicas avançadas de otimização
+– Loop Unrolling
+Replica-se corpo do laço para reduzir número de iterações
+- Supondo que índice de laço fosse múltiplo de 4, pode-se
+buscar 4 elementos do array a cada iteração
+- Utilização mais eficiente do pipeline superescalar
+Porém, código fica maior.
+
+Escolha de quais instruções serão executadas em
+paralelo pode ser feita por hardware ou software
+ Hardware - SUPERESCALAR
+– Lógica especial deve ser inserida no processador
+– Decisão em tempo de execução (escolha dinâmica)
+
+O termo Superescalar é mais associado a processadores
+que utilizam o hardware para fazer esta escolha
+-> CPU decide se 0, 1, 2, … instruções serão executadas a
+cada ciclo
+– Escalonamento de instruções
+– Evitando conflitos
+-> Evita a necessidade de escalonamento de instruções por
+parte do compilador
+– Embora o compilador possa ajudar
+– Semântica do código é preservada pela CPU
+
+Escalonamento Dinâmico pelo HW
+Permite que CPU execute instruções fora de ordem para evitar retardos
+– Escrita nos bancos de registradores para completar instrução é feita em ordem
+- Encontram-se processadores que permitem escrita fora de ordem também
+
+
+ Software _ VLIW
+– Compilador Rearruma código e agrupa instruções
+– Decisão em tempo de compilação (escolha estática)
+O termo VLIW (Very Long Instruction Word) é associado a processadores parecidos com superescalares mas que dependem do software(compilador) para fazer esta escolha
+- O compilador descobre as instruções que podem ser executadas em paralelo e as agrupa formando uma longa instrução (Very Long Instruction Word) que será despachada para a máquina
+– Escalonamento de instruções
+– Evitando conflitos
+
+<ex>
+Intel Itanium -
+Instruções são empacotadas
+– Cada pacote (bundle) contém 3 instruções e 128 bits
+– Cada instrução tem 41 bits
+– 5 bits são utizados para informar quais unidades funcionais
+serão usadas pelas instruções
+<\ex>
+r3:= r0 op1 r5 (i1)
+r4:= r3 op2 1 (i2)
+r3:= r5 op3 1 (i3)
+r7:= r3 op4 r4 (i4)
+
+-> Dependência Verdadeira (Read-After-Write – RAW)
+– i2 e i1, i4 e i3, i4 e i2
+-> Anti-dependência (Write-After-Read - WAR)
+– i3 não pode terminar antes de i2 iniciar
+-> Dependência de Saída (Write-After-Write – WAW)
+– i3 não pode terminar antes de i1
+
+-> Único tipo de dependência que causa problemas em um
+pipeline é a Dependência Verdadeira (RAW)
+-> Anti-dependência (WAR) não causa nenhum problema em
+um pipeline , pois instrução que escreve sempre o faz em
+um estágio posterior ao da leitura do registrador pela
+instrução anterior
+– Idem para WAW
+(WAR E WAW)
+Mesmo não causando nenhum problema para o pipeline,
+estas dependências podem “iludir” o compilador ou HW,
+devendo portanto ser eliminadas. (iludem pois o compilador pode pensar que )
+Solução: Renomeação de registradores - Pode ser feita tanto pelo compilador (SW) ou pelo HW
+
+
+Analisando o Superescalar…
+? Visa reduzir o número médio de ciclos por instrução (CPI)
+– CPI < 1
+– Instruções podem iniciar ao mesmo tempo
+? HW encarregado de escalonar instruções e detectar
+conflitos
+– Permite execução fora de ordem de instruções
+– Considera aspectos dinâmicos de execução
+– Lógica em HW mais complexa
+? Maior custo de HW
+– Unidades de Reserva, lógica de escalonamento
+
+
+Analisando o VLIW
+? Simplifica HW transferindo para o compilador a lógica de
+detecção do paralelismo
+– Circuitos mais simples
+– Clock mais rápido
+? Aspectos dinâmicos não são analisados pelo compilador, o
+que pode causar retardos inesperados
+– Exemplo: Se dado não estiver na cache
+? Mudanças no pipeline de um VLIW requer mudanças no
+compilador
