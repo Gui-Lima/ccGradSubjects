@@ -23,8 +23,8 @@ Uma pequena ordem de coisas que pretendo fazer no futuro mais próximo
 
 ## Projetos parecidos também úteis
 * PetLib - https://www.facebook.com/CInUFPEOficial/posts/o-pet-inform%C3%A1tica-acaba-de-lan%C3%A7ar-o-petlib-uma-pasta-no-drive-destinada-ao-compa/1684144688329682/
-* pote - abre.ai/pote
-* bolha - tiny.cc/bolha
+* pote - http://abre.ai/pote
+* bolha - https://tiny.cc/bolha
 
 ## TODO
 Caso você queira fazer algo que não seja resumos/guias
