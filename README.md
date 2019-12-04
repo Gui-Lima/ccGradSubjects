@@ -29,7 +29,7 @@ Uma pequena ordem de coisas que pretendo fazer no futuro mais próximo
 ## TODO
 Caso você queira fazer algo que não seja resumos/guias
 * Passar os guias para Markdown talvez fique mais fácil de ler, mas é sempre bom e seguro ter os arquivos brutos em odt também.
-* numerar as pastas para ficar em uma ordem mais legível
+* numerar as pastas dos períodos para ficar em uma ordem mais legível (as dos periodos numérica e não alfabética)
 
 ## EXTRA - DRIVE COMPARTILHADO
 Para coisas que estão menos organizadas ou incompletas eu criei um drive. Poste as coisas lá de qualquer maneira, eu vou organizando aos poucos, talvez completando e depois pondo nesse repositório.
